@@ -1,0 +1,1 @@
+vcu.exe > shao.txt 2<&1
