@@ -1,10 +1,11 @@
 package routers
 
 import (
-	"platform/controllers"
 	"github.com/astaxie/beego"
+	"platform/controllers"
 )
 
 func init() {
-    beego.Router("/", &controllers.MainController{})
+	beego.Router("/", &controllers.MainController{})
+	beego.SetStaticPath("/hls", "/static/hls")
 }

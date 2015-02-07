@@ -32,16 +32,109 @@ const (
 	TSFILEMAX_SIZE = 6 * 1024 * 1024
 )
 
-type hlsFile struct {
-	fileHandler *os.File
-	fileSize    uint32
+/*
+m3u8 文件生成、
+#EXTM3U     						 m3u文件头，必须放在第一
+
+#EXT-X-MEDIA-SEQUENCE				 第一个TS分片的序列号
+
+#EXT-X-TARGETDURATION     			 每个分片TS的最大的时长
+
+#EXT-X-ALLOW-CACHE       		     是否允许cache
+
+#EXT-X-ENDLIST          		     m3u8文件结束符
+
+#EXTINF                   		  extra info，分片TS的信息，如时长，带宽等
+//EXT-X-STREAM-INF字段，说明了关于所属下载地址的相关信息。
+#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=500000
+
+*/
+
+type m3u8Tag struct {
+	url       string
+	duration  uint32
+	bandwidth uint32
+	timeStamp uint32
 }
 
-func (thsi *hlsFile) generateFileName() string {
+type m3u8SliceFile struct {
+	fileHandler *os.File
+	seq         uint32
+	tag         [3]m3u8Tag
+	pos         uint32
+}
+
+func (this *m3u8SliceFile) Init(ID string) bool {
+
+	var err error
+	this.fileHandler, err = os.OpenFile(ID+".m3u8",
+		os.O_CREATE|os.O_RDWR,
+		0777)
+	if err != nil {
+		fmt.Println("Init OpenFile Fail", err)
+		return false
+	}
+	this.pos = 0
+
+	return true
+}
+
+func (this *m3u8SliceFile) Update(tag m3u8Tag) {
+	this.seq += 1
+	this.tag[this.pos] = tag
+	this.pos += 1
+	this.pos %= 3
+	buf := new(bytes.Buffer)
+
+	fmt.Fprintf(buf, "#EXTM3U\n"+
+		"#EXT-X-MEDIA-SEQUENCE:%d\n"+
+		"#EXTINF:%d\n"+
+		"%s\n"+
+		"#EXTINF:%d\n"+
+		"%s\n"+
+		"#EXTINF:%d\n"+
+		"%s\n"+
+		"#EXT-X-ENDLIST", this.seq,
+		this.tag[0].duration, this.tag[0].url,
+		this.tag[1].duration, this.tag[1].url,
+		this.tag[2].duration, this.tag[2].url)
+	this.fileHandler.Seek(0, os.SEEK_SET)
+	this.fileHandler.Write(buf.Bytes())
+	this.fileHandler.Sync()
+}
+
+func (this *m3u8SliceFile) Uninit() {
+	this.fileHandler.Close()
+}
+
+type hlsFile struct {
+	fileName    string
+	fileHandler *os.File
+	fileSize    uint32
+	m3u8        *m3u8SliceFile
+}
+
+func (this *hlsFile) Init(ID string) {
+	this.fileHandler = nil
+	this.fileSize = 0
+	this.m3u8 = new(m3u8SliceFile)
+	this.m3u8.Init(ID)
+}
+
+func (this *hlsFile) Uninit(ID string) {
+	if this.fileHandler != nil {
+		this.fileHandler.Close()
+	}
+	if this.m3u8 != nil {
+		this.m3u8.Uninit()
+	}
+}
+
+func (this *hlsFile) generateFileName() string {
 
 	filename := new(bytes.Buffer)
 	now := time.Now()
-	fmt.Fprintf(filename, "%04d_%02d_%2d_%2d_%2d_%2d.ts",
+	fmt.Fprintf(filename, "%04d_%02d_%02d_%02d_%02d_%02d.ts",
 		now.Year(),
 		now.Month(),
 		now.Day(),
@@ -52,8 +145,9 @@ func (thsi *hlsFile) generateFileName() string {
 }
 func (this *hlsFile) write(data []byte) {
 	if this.fileHandler == nil {
+		this.fileName = this.generateFileName()
 		var err error
-		this.fileHandler, err = os.OpenFile(this.generateFileName(), os.O_CREATE|os.O_RDWR, 0777)
+		this.fileHandler, err = os.OpenFile(this.fileName, os.O_CREATE|os.O_RDWR, 0777)
 		if err != nil {
 			fmt.Println("write", err)
 			return
@@ -65,6 +159,8 @@ func (this *hlsFile) write(data []byte) {
 		this.fileHandler.Close()
 		this.fileHandler = nil
 		this.fileSize = 0
+
+		this.m3u8.Update(m3u8Tag{duration: 10, url: this.fileName})
 	}
 }
 
@@ -84,6 +180,8 @@ type RawData2Hls struct {
 func (this *RawData2Hls) Init() {
 	this.muxTsHandle = C.createH264MuxTs()
 	C.setCB(this.muxTsHandle)
+
+	this.fileHandler.Init("shao")
 }
 
 func (this *RawData2Hls) Uninit() {

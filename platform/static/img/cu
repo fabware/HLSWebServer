@@ -1,0 +1,11 @@
+AUTO 	: true
+res begin   : 1
+res count	: 800
+-------------------------------------------------------
+C:\Users\Administrator\Desktop\local\cu_llog
+C:\Users\Administrator\Desktop\local\cu_elog
+C:\Users\Administrator\Desktop\local\cu_mlog
+******GCTime:(48:28),GCNum:10, GCPause:11.0007ms,GCPT:0.029001700000000002******
+17:48:32 On:0,Total:800,TotalLeave:0,Open:0,RecvBand:0.00mps,SendBand:0.00mps,Delay:NaNms
+
+^C

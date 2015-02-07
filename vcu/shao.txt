@@ -12,4 +12,3 @@ Client Console GUI Task Running!
 			c : Close Resource
 			
 Please Your Select : 
-^C
