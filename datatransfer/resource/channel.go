@@ -260,7 +260,7 @@ func (chn *Channel) handleReqOpenRes(clientID uint32, data []byte) {
 		chn.sendProto(clientID,
 			base.OPEN_RESOURCE_CMD,
 			"", err.Error(),
-			request.Ns)
+			"huamail.defualt")
 		return
 	}
 
@@ -273,7 +273,7 @@ func (chn *Channel) handleReqOpenRes(clientID uint32, data []byte) {
 		chn.sendProto(clientID,
 			base.OPEN_RESOURCE_CMD,
 			"", base.OPEN303,
-			request.Ns)
+			"huamail.defualt")
 		return
 	}
 

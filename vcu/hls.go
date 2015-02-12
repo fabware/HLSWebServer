@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	TSFILEMAX_DURATION = 6
+	TSFILEMAX_DURATION = 60
 )
 
 /*
@@ -244,39 +244,7 @@ func (this *RawData2Hls) goRawH264Data2Ts(frameType uint16, data []byte) {
 */
 func (this *RawData2Hls) goRawH264Data2Ts(frameType uint16, data []byte) {
 
-	if frameType == 1 {
-		fmt.Println("***************Recv Mesg ", frameType, len(data))
-		this.frameCount++
-
-		if this.frameCount == 1 {
-
-			if this.cache != nil && this.cache.Len() > 0 {
-				C.rawH264Data2Ts(this.muxTsHandle,
-					unsafe.Pointer(&this.cache.Bytes()[0]),
-					C.uint(this.cache.Len()))
-				fmt.Println("Write", C.uint(this.cache.Len()))
-				this.h264FileHandler.Write(this.cache.Bytes())
-
-			}
-			C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
-			this.h264FileHandler.Write(data)
-		} else if this.frameCount == 2 {
-			C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
-			this.h264FileHandler.Write(data)
-		}
-
-		if this.frameCount == 3 {
-			this.cache = new(bytes.Buffer)
-			this.frameCount = 0
-			this.cache.Write(data)
-		}
-
-	} else {
-
-		this.cache.Write(data)
-
-		//C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
-
-	}
-
+	C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
+	this.h264FileHandler.Write(data)
+	fmt.Println(data[0:4])
 }
