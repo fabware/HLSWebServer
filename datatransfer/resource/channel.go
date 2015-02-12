@@ -31,7 +31,7 @@ type Channel struct {
 
 	chnMutex sync.RWMutex // 保护资源相关通道
 
-	openRes     map[string]*Resourcer //	关注的资源
+	openRes     map[uint32]*Resourcer //	关注的资源
 	registerRes map[string]*Resourcer // 注册的资源
 	resMutex    sync.RWMutex          // 保护资源map
 
@@ -163,7 +163,7 @@ func (chn *Channel) timerSendHeartTask() {
 		case <-chn.heartChn:
 
 			failCount = 0
-		case <-time.After(10 * time.Second):
+		case <-time.After(2 * time.Second):
 			failCount++
 		}
 		if failCount >= 5 {
@@ -173,9 +173,7 @@ func (chn *Channel) timerSendHeartTask() {
 		time.Sleep(10 * time.Second)
 
 	}
-
 	mylog.GetErrorLogger().Println(" End Chn Heart Task")
-
 }
 
 func (chn *Channel) sendProto(cID uint32, cmd uint8, result string, err string, ns string) {
@@ -234,7 +232,7 @@ func (chn *Channel) getReqParam(clientID uint32, data []byte) (*base.RequestJson
 
 }
 
-func (chn *Channel) CheckResIsOpen(ID string) bool {
+func (chn *Channel) CheckResIsOpen(ID uint32) bool {
 
 	chn.resMutex.RLock()
 	defer chn.resMutex.RUnlock()
@@ -271,11 +269,12 @@ func (chn *Channel) handleReqOpenRes(clientID uint32, data []byte) {
 	openResParam := base.OpenResParamJson{param["resourceid"].(string),
 		uint32(param["timeout"].(float64))}
 
-	if chn.CheckResIsOpen(openResParam.ID) {
+	if chn.CheckResIsOpen(clientID) {
 		chn.sendProto(clientID,
 			base.OPEN_RESOURCE_CMD,
 			"", base.OPEN303,
 			request.Ns)
+		return
 	}
 
 	mylog.GetErrorLogger().Println("Chn Open Resource ID ", openResParam.ID)
@@ -336,7 +335,7 @@ func (chn *Channel) handleReqOpenRes(clientID uint32, data []byte) {
 	{
 		chn.resMutex.Lock()
 		defer chn.resMutex.Unlock()
-		chn.openRes[resourcer.GetID()] = resourcer
+		chn.openRes[clientID] = resourcer
 	}
 	stat.GetLocalStatistInst().OpenRes()
 
@@ -365,24 +364,20 @@ func (chn *Channel) handleReqCloseRes(clientID uint32, data []byte) {
 			"huamail.defualt")
 		return
 	}
-	//获取资源
-	param := request.Param.(map[string]interface{})
-	closeResParam := base.CloseResParamJson{param["resourceid"].(string)}
-
-	mylog.GetErrorLogger().Println("Chn Close Resource ID ", closeResParam.ID)
 
 	func() {
 		chn.resMutex.Lock()
 		defer chn.resMutex.Unlock()
-		resourcer, ok := chn.openRes[closeResParam.ID]
+		resourcer, ok := chn.openRes[clientID]
 
 		if ok {
+			mylog.GetErrorLogger().Println("Chn Close Resource ID ", resourcer.GetID())
 			clientDataID := new(ResourceClient)
 			clientDataID.ClientInf = chn
 			clientDataID.ClientID = clientID
 			responseResult, responseErr = resourcer.Close(clientDataID, "", false)
 			ReleaseResourcer(resourcer)
-			delete(chn.openRes, closeResParam.ID)
+			delete(chn.openRes, clientID)
 		}
 	}()
 
@@ -406,11 +401,11 @@ func (chn *Channel) handleEventNotify(event notifyEvent) {
 	func() {
 		chn.resMutex.Lock()
 		defer chn.resMutex.Unlock()
-		resourcer, ok := chn.openRes[event.resourceID]
+		resourcer, ok := chn.openRes[event.clientID]
 
 		if ok {
 			ReleaseResourcer(resourcer)
-			delete(chn.openRes, event.resourceID)
+			delete(chn.openRes, event.clientID)
 		}
 	}()
 
@@ -574,6 +569,7 @@ func (chn *Channel) handleWriteSocket(proto *base.Proto) {
 		}
 		return
 	}
+	fmt.Println("handleWriteSocket ", cmdID)
 	msg := proto.EncodeHdr()
 	_, err := chn.connSocket.Write(msg.Bytes())
 	if err != nil {
@@ -718,7 +714,7 @@ func (chn *Channel) Run(connSocket net.Conn) error {
 	chn.notifyChn = make(chan notifyEvent, 1)
 	chn.heartChn = make(chan bool, 1)
 
-	chn.openRes = make(map[string]*Resourcer)
+	chn.openRes = make(map[uint32]*Resourcer)
 	chn.registerRes = make(map[string]*Resourcer)
 
 	chn.connSocket = connSocket

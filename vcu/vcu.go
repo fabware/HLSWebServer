@@ -4,6 +4,7 @@ package main
 // 心跳，双向产生，需要了解状态的都可以通过发送心跳，心跳接受方有义务回复心跳
 import (
 	"bytes"
+
 	"encoding/binary"
 	"encoding/json"
 	"flag"
@@ -14,7 +15,7 @@ import (
 	//"unsafe"
 	"utility/mylog"
 	//"plat"
-	"os"
+
 	"strconv"
 	"sync/atomic"
 	"time"
@@ -23,13 +24,12 @@ import (
 )
 
 type CUClient struct {
-	connSocket      net.Conn
-	sn              string
-	clientID        uint32
-	Valid           uint32
-	heartChn        chan bool
-	token           string
-	h264FileHandler *os.File
+	connSocket net.Conn
+	sn         string
+	clientID   uint32
+	Valid      uint32
+	heartChn   chan bool
+	token      string
 
 	hlsHandler *RawData2Hls
 }
@@ -61,7 +61,7 @@ func (cu *CUClient) handleError(err error) {
 	atomic.CompareAndSwapUint32(&cu.Valid, 1, 0)
 	cu.connSocket.Close()
 	close(cu.heartChn)
-	cu.h264FileHandler.Close()
+
 	go cu.ReRun()
 }
 
@@ -133,21 +133,20 @@ func (cu *CUClient) readTask() {
 
 		} else if cmdID == base.DATA_STREAM {
 			stat.GetLocalStatistInst().RecvData(uint64(proto.RD.HD.BodyLen))
-			timeStampBuf := bytes.NewBuffer(proto.BD.Data[4:12])
-			var timeStamp int64 = 0
-			binary.Read(timeStampBuf, binary.LittleEndian, &timeStamp)
-			timeNow := time.Now().UnixNano()
-			delay := timeNow - timeStamp
-			if len(proto.BD.Data) > 12 {
-				cu.hlsHandler.goRawH264Data2Ts(proto.BD.Data[12:])
-				cu.h264FileHandler.Write(proto.BD.Data[12:])
-				//fmt.Println(len(proto.BD.Data))
-			} else {
-				fmt.Println(len(proto.BD.Data))
+			//timeStampBuf := bytes.NewBuffer(proto.BD.Data[4:12])
+			//var timeStamp int64 = 0
+			//binary.Read(timeStampBuf, binary.LittleEndian, &timeStamp)
+			//timeNow := time.Now().UnixNano()
+			//delay := timeNow - timeStamp
+			var frameType uint16 = 0
+
+			var err error = nil
+			err = binary.Read(bytes.NewBuffer(proto.BD.Data[10:12]), binary.LittleEndian, &frameType)
+			if err != nil {
+				fmt.Println(err)
 			}
 
-			stat.GetLocalStatistInst().DelayValue(delay)
-			//fmt.Println("Recv Mesg")
+			cu.hlsHandler.goRawH264Data2Ts(frameType, proto.BD.Data[20:])
 
 		} else if cmdID == base.OPEN_RESOURCE_CMD {
 			var responseJson base.ResponseJson
@@ -328,7 +327,7 @@ func (cu *CUClient) run() {
 	atomic.CompareAndSwapUint32(&cu.Valid, 0, 1)
 
 	cu.heartChn = make(chan bool, 1)
-	cu.h264FileHandler, err = os.OpenFile("my.h264", os.O_CREATE|os.O_RDWR, 0777)
+
 	go cu.readTask()
 	atomic.AddUint32(&cu.clientID, 1)
 	if oneEnvParam.auto {

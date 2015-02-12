@@ -212,7 +212,6 @@ func (pu *PUDevice) handleSource(clientID uint32) {
 		b := file.GetNextFrame()
 		if b == nil {
 			file.Seek()
-
 			continue
 		}
 		proto.EncodeBody(b)
@@ -220,7 +219,7 @@ func (pu *PUDevice) handleSource(clientID uint32) {
 
 		stat.GetLocalStatistInst().SendData(uint64(len(proto.BD.Data)))
 
-		time.Sleep(80 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 
 	}
 }

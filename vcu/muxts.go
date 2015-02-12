@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"unsafe"
 )
 
@@ -20,5 +19,5 @@ func goDataTsCallBack(userData unsafe.Pointer,
 	}
 	(*RawData2Hls)(userData).fileHandler.write(dst)
 	//TsFileHandler.Write(dst)
-	fmt.Println("XXXXXXXXXXXXXXX", userData)
+
 }

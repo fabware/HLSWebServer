@@ -1,0 +1,6 @@
+
+2015/02/12 15:06:37 [311 use of closed network connection]
+
+2015/02/12 15:10:25 [311 WSARecv tcp 127.0.0.1:52111: An existing connection was forcibly closed by the remote host.]
+
+2015/02/12 15:11:26 [311 WSARecv tcp 127.0.0.1:53110: An existing connection was forcibly closed by the remote host.]

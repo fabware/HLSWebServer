@@ -6,15 +6,15 @@ package main
 #cgo LDFLAGS: -lTsMux  -L.
 
 void* createH264MuxTs();
-void setTsDataCB(void* inst, void* f);
-int rawH264Data2Ts(void* inst, void* user_data,void* data, unsigned int len);
+void setTsDataCB(void* inst, void* f,void* user_data);
+int rawH264Data2Ts(void* inst, void* data, unsigned int len);
 void releaseH264MuxTs(void* inst);
 
 extern void goDataTsCallBack();
 
-void setCB(void* handle)
+void setCB(void* handle, void* user_data)
 {
-    setTsDataCB(handle,goDataTsCallBack);
+    setTsDataCB(handle,goDataTsCallBack, user_data);
 }
 
 */
@@ -22,6 +22,7 @@ import "C"
 
 import (
 	"bytes"
+
 	"fmt"
 	"os"
 	"time"
@@ -29,7 +30,7 @@ import (
 )
 
 const (
-	TSFILEMAX_SIZE = 6 * 1024 * 1024
+	TSFILEMAX_DURATION = 6
 )
 
 /*
@@ -112,11 +113,12 @@ type hlsFile struct {
 	fileHandler *os.File
 	fileSize    uint32
 	m3u8        *m3u8SliceFile
+	begTime     uint32
 }
 
 func (this *hlsFile) Init(ID string) {
 	this.fileHandler = nil
-	this.fileSize = 0
+	this.begTime = 0
 	this.m3u8 = new(m3u8SliceFile)
 	this.m3u8.Init(ID)
 }
@@ -153,14 +155,19 @@ func (this *hlsFile) write(data []byte) {
 			return
 		}
 	}
+	if this.begTime == 0 {
+		this.begTime = uint32(time.Now().UnixNano() / 1000 / 1000 / 1000)
+	}
+	now := uint32(time.Now().UnixNano() / 1000 / 1000 / 1000)
+
 	this.fileHandler.Write(data)
 	this.fileSize += uint32(len(data))
-	if this.fileSize >= TSFILEMAX_SIZE {
+	now -= this.begTime
+	if now >= TSFILEMAX_DURATION {
 		this.fileHandler.Close()
 		this.fileHandler = nil
-		this.fileSize = 0
-
-		this.m3u8.Update(m3u8Tag{duration: 10, url: this.fileName})
+		this.begTime = 0
+		this.m3u8.Update(m3u8Tag{duration: now, url: this.fileName})
 	}
 }
 
@@ -173,21 +180,103 @@ func (this *hlsFile) write(data []byte) {
 	 mongdb，Riak
 */
 type RawData2Hls struct {
-	fileHandler hlsFile
-	muxTsHandle unsafe.Pointer
+	fileHandler     hlsFile
+	muxTsHandle     unsafe.Pointer
+	cache           *bytes.Buffer
+	frameCount      uint32
+	h264FileHandler *os.File
 }
 
 func (this *RawData2Hls) Init() {
 	this.muxTsHandle = C.createH264MuxTs()
-	C.setCB(this.muxTsHandle)
-
+	C.setCB(this.muxTsHandle, unsafe.Pointer(this))
+	this.frameCount = 0
 	this.fileHandler.Init("shao")
+	this.cache = nil
+	this.h264FileHandler, _ = os.OpenFile("my.h264", os.O_CREATE|os.O_RDWR, 0777)
 }
 
 func (this *RawData2Hls) Uninit() {
 	C.releaseH264MuxTs(this.muxTsHandle)
 }
 
-func (this *RawData2Hls) goRawH264Data2Ts(data []byte) {
-	C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(this), unsafe.Pointer(&data[0]), C.uint(len(data)))
+/*
+func (this *RawData2Hls) goRawH264Data2Ts(frameType uint16, data []byte) {
+
+	if frameType == 1 {
+		fmt.Println("***************Recv Mesg ", frameType, len(data))
+		this.frameCount++
+
+		if this.frameCount == 1 {
+
+			if this.cache != nil && this.cache.Len() > 0 {
+				C.rawH264Data2Ts(this.muxTsHandle,
+					unsafe.Pointer(&this.cache.Bytes()[0]),
+					C.uint(this.cache.Len()))
+				//this.h264FileHandler.Write(this.cache.Bytes())
+			}
+			C.rawH264Data2Ts(this.muxTsHandle,
+				unsafe.Pointer(&data[0]),
+				C.uint(len(data)))
+
+		} else if this.frameCount == 2 {
+			C.rawH264Data2Ts(this.muxTsHandle,
+				unsafe.Pointer(&data[0]),
+				C.uint(len(data)))
+		}
+
+		if this.frameCount == 3 {
+			this.cache = new(bytes.Buffer)
+			this.cache.Write(data)
+			this.frameCount = 0
+		}
+
+	} else {
+
+		this.cache.Write(data)
+
+		//C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
+		//this.h264FileHandler.Write(data)
+	}
+
+}
+
+*/
+func (this *RawData2Hls) goRawH264Data2Ts(frameType uint16, data []byte) {
+
+	if frameType == 1 {
+		fmt.Println("***************Recv Mesg ", frameType, len(data))
+		this.frameCount++
+
+		if this.frameCount == 1 {
+
+			if this.cache != nil && this.cache.Len() > 0 {
+				C.rawH264Data2Ts(this.muxTsHandle,
+					unsafe.Pointer(&this.cache.Bytes()[0]),
+					C.uint(this.cache.Len()))
+				fmt.Println("Write", C.uint(this.cache.Len()))
+				this.h264FileHandler.Write(this.cache.Bytes())
+
+			}
+			C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
+			this.h264FileHandler.Write(data)
+		} else if this.frameCount == 2 {
+			C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
+			this.h264FileHandler.Write(data)
+		}
+
+		if this.frameCount == 3 {
+			this.cache = new(bytes.Buffer)
+			this.frameCount = 0
+			this.cache.Write(data)
+		}
+
+	} else {
+
+		this.cache.Write(data)
+
+		//C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
+
+	}
+
 }

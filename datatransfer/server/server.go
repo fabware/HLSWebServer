@@ -31,7 +31,7 @@ var oneEnvParam *EnvParam = nil
 func ParseArg() {
 	oneEnvParam = new(EnvParam)
 	flag.BoolVar(&oneEnvParam.SupportStat, "S", false, "Support Statist")
-	flag.StringVar(&oneEnvParam.url, "I", "localhost:9999", "DT IP")
+	flag.StringVar(&oneEnvParam.url, "I", ":9999", "DT IP")
 	flag.Parse()
 	fmt.Printf("DT Server IP 	: %v\n", oneEnvParam.url)
 	fmt.Printf("-------------------------------------------------------\n")

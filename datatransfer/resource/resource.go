@@ -11,6 +11,7 @@ import (
 	"utility/mylog"
 	"utility/stat"
 
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -168,10 +169,10 @@ func (r *Resourcer) verificate(token *base.TokenJson) string {
 }
 
 func (r *Resourcer) Open(chn *ResourceClient, request *base.RequestJson, token *base.TokenJson) (string, string) {
-
+	fmt.Println("1 Resourcer Open Resource ")
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
-
+	fmt.Println("2 Resourcer Open Resource ")
 	/*verErr := r.verificate(token)
 	if verErr != "" {
 		return "", verErr
@@ -290,6 +291,7 @@ func (r *Resourcer) Close(chn *ResourceClient, ns string, all bool) (string, str
 	select {
 
 	case msg, ok := <-r.ClientOpenChn:
+		fmt.Println("ClientOpenChn Close ")
 		if !ok {
 			mylog.GetErrorLogger().Println("ClientOpenChn Close ")
 			return "", base.NOFOUNF404
@@ -304,7 +306,7 @@ func (r *Resourcer) Close(chn *ResourceClient, ns string, all bool) (string, str
 
 		return responseJson.Result, responseJson.Error
 
-	case <-time.After(20 * time.Second): //TimeOut
+	case <-time.After(2 * time.Second): //TimeOut
 		return r.Result, base.NOFOUNF404
 	}
 
@@ -341,14 +343,13 @@ func (r *Resourcer) broadcastData(proto *base.Proto) {
 
 		sendLen := uint64(proto.RD.HD.BodyLen)
 		stat.GetLocalStatistInst().RecvData(sendLen)
-
 		sendP := base.GetProto()
-
 		sendP.RD = proto.RD
+		sendP.RD.BaseHD.CommandId |= 0x80
 		sendP.BD = proto.BD
 		sendP.RD.HD.ClientIdent = chn.ClientID
 
-		if chn.ClientInf.Send(proto) {
+		if chn.ClientInf.Send(sendP) {
 			tmpClientDataChn = append(tmpClientDataChn, chn)
 			stat.GetLocalStatistInst().SendData(sendLen)
 		}
