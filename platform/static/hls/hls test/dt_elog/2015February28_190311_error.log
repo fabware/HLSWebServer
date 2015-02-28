@@ -1,0 +1,83 @@
+
+2015/02/28 19:03:12 [Remote Connect Addr :  192.168.20.191:63427]
+
+2015/02/28 19:03:12 [ Begin Chn Heart Task]
+
+2015/02/28 19:03:16 [token  {
+	"ns":	"huamai.default",
+	"method":	"register",
+	"token":	"",
+	"params":	{
+		"resourceid":	"1",
+		"restype":	1,
+		"repos":	false
+	}
+}]
+
+2015/02/28 19:03:16 [Register Source]
+
+2015/02/28 19:03:21 [Remote Connect Addr :  192.168.20.191:63443]
+
+2015/02/28 19:03:21 [ Begin Chn Heart Task]
+
+2015/02/28 19:03:24 [token  {"token":"","ns":"ns","method":"open","params":{"resourceid":"1","timeout":10}}]
+
+2015/02/28 19:03:24 [Chn Open Resource ID  1]
+
+2015/02/28 19:03:24 [1  attent Resource Len  1]
+
+2015/02/28 19:04:47 [Remote Connect Addr :  192.168.20.191:63474]
+
+2015/02/28 19:04:47 [ Begin Chn Heart Task]
+
+2015/02/28 19:04:49 [token  {"token":"","ns":"ns","method":"open","params":{"resourceid":"1","timeout":10}}]
+
+2015/02/28 19:04:49 [Chn Open Resource ID  1]
+
+2015/02/28 19:04:49 [Resource Has Opend]
+
+2015/02/28 19:04:49 [1  attent Resource Len  2]
+
+2015/02/28 19:05:25 [311 WSARecv tcp 192.168.20.191:9101: An existing connection was forcibly closed by the remote host.]
+
+2015/02/28 19:05:25 [handleError handleReadSocketTask]
+
+2015/02/28 19:05:25 [handleError handleReadChnTask Panic]
+
+2015/02/28 19:05:25 [handleError Notify Chn Close]
+
+2015/02/28 19:05:25 [311 WSARecv tcp 192.168.20.191:9101: An existing connection was forcibly closed by the remote host.]
+
+2015/02/28 19:05:25 [handleError handleReadSocketTask]
+
+2015/02/28 19:05:25 [ release chn res  1]
+
+2015/02/28 19:05:25 [Close Resource]
+
+2015/02/28 19:05:25 [Close unattent]
+
+2015/02/28 19:05:25 [1  unattent Resource Len  0]
+
+2015/02/28 19:05:25 [ release chn res  1]
+
+2015/02/28 19:05:25 [Close Resource]
+
+2015/02/28 19:05:25 [Close unattent]
+
+2015/02/28 19:05:25 [1  unattent Resource Len  0]
+
+2015/02/28 19:05:25 [handleError handleReadChnTask Panic]
+
+2015/02/28 19:05:25 [handleError Notify Chn Close]
+
+2015/02/28 19:05:27 [ End Chn Heart Task]
+
+2015/02/28 19:05:29 [311 WSARecv tcp 192.168.20.191:9101: An existing connection was forcibly closed by the remote host.]
+
+2015/02/28 19:05:29 [handleError handleReadSocketTask]
+
+2015/02/28 19:05:29 [Unregister Close]
+
+2015/02/28 19:05:29 [handleError handleReadChnTask Panic]
+
+2015/02/28 19:05:29 [handleError Notify Chn Close]

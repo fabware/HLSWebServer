@@ -246,8 +246,8 @@
       // for television broadcast, a program would probably be
       // equivalent to a channel. In HLS, it would be very unusual to
       // create an mp2t stream with multiple programs.
-	
       if (0x0000 === pid) {
+		   videojs.log("TestIng PID");
         // The PAT may be split into multiple sections and those
         // sections may be split into multiple packets. If a PAT
         // section starts in this packet, PUSI will be true and the
@@ -289,8 +289,6 @@
         }
       } else if (pid === self.stream.programMapTable[STREAM_TYPES.h264] ||
                  pid === self.stream.programMapTable[STREAM_TYPES.adts]) {
-		
-		
         if (pusi) {
           // comment out for speed
           if (0x00 !== data[offset + 0] || 0x00 !== data[offset + 1] || 0x01 !== data[offset + 2]) {
@@ -414,8 +412,7 @@
       } else if (0x1FFF === pid) {
         // NULL packet
       } else {
-		    console.log("Stream ID"+self.stream.programMapTable[STREAM_TYPES.h264]);
-        videojs.log("Test Unknown PID parsing TS packet: " + pid);
+        videojs.log("Unknown PID parsing TS packet: " + pid + self.stream.pmtPid);
       }
 
       return true;

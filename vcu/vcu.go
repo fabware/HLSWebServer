@@ -16,6 +16,7 @@ import (
 	"utility/mylog"
 	//"plat"
 
+	"os/exec"
 	"strconv"
 	"sync/atomic"
 	"time"
@@ -24,12 +25,14 @@ import (
 )
 
 type CUClient struct {
-	connSocket net.Conn
-	sn         string
-	clientID   uint32
-	Valid      uint32
-	heartChn   chan bool
-	token      string
+	connSocket   net.Conn
+	ffmpegSocket net.Conn
+
+	sn       string
+	clientID uint32
+	Valid    uint32
+	heartChn chan bool
+	token    string
 
 	hlsHandler *RawData2Hls
 }
@@ -146,6 +149,9 @@ func (cu *CUClient) readTask() {
 				fmt.Println(err)
 			}
 
+			if cu.ffmpegSocket != nil {
+				cu.ffmpegSocket.Write(proto.BD.Data[20:])
+			}
 			cu.hlsHandler.goRawH264Data2Ts(frameType, proto.BD.Data[20:])
 
 		} else if cmdID == base.OPEN_RESOURCE_CMD {
@@ -311,6 +317,7 @@ func (cu *CUClient) ReRun() {
 
 func (cu *CUClient) run() {
 
+	fmt.Println(oneEnvParam.url)
 	connSocket, err := net.DialTimeout("tcp", oneEnvParam.url, 2*time.Second)
 
 	if err != nil {
@@ -356,11 +363,78 @@ func parseArg() {
 	fmt.Printf("-------------------------------------------------------\n")
 }
 
+func runTcp() error {
+
+	lnSocket, err := net.Listen("tcp", "localhost:9999")
+	if err != nil {
+		mylog.GetErrorLogger().Println(err)
+		return err
+	}
+
+	defer lnSocket.Close()
+	for {
+
+		connSocket, err := lnSocket.Accept()
+		if err != nil {
+			mylog.GetErrorLogger().Println(err)
+			return err
+		}
+		fmt.Println("Recv Connect", connSocket.LocalAddr().String())
+		var cu *CUClient = &CUClient{sn: "1", token: ""}
+		cu.ffmpegSocket = connSocket
+		go cu.run()
+	}
+
+	return nil
+}
+
+func ffmpegCmmand() {
+	cmd := exec.Command("hls.bat")
+
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Start()
+	if err != nil {
+		fmt.Println("handleHttpPost ", err)
+	}
+
+	/*out, err := exec.Command("date").Output()
+	if err != nil {
+		fmt.Print(err)
+	}
+	fmt.Printf("The date is %s\n", out)*/
+
+}
+func handleHttpPost(rw http.ResponseWriter, rq *http.Request) {
+
+	go ffmpegCmmand()
+	fmt.Println(rq.Header)
+	rw.Write([]byte("No,Sorry, Method Not Exist"))
+}
+
+func runHttp(port int) error {
+
+	portStr := new(bytes.Buffer)
+	portStr.WriteByte(':')
+	portStr.WriteString(strconv.Itoa(int(port)))
+
+	http.HandleFunc("/GET", handleHttpPost)
+	e := http.ListenAndServe(portStr.String(), nil)
+	if e != nil {
+		return e
+	}
+
+	return nil
+}
+
 func main() {
 
 	go func() {
 		http.ListenAndServe("localhost:6001", nil)
 	}()
+	parseArg()
+	go runHttp(9998) // 负责监听web服务器请求资源
+	go runTcp()      // 负责数据代理
 
 	//platform := &plat.Platform{Url: "https://192.168.20.194:44312"}
 	//platform.Register(plat.RegisterInfo{"shaoshengr1", "shaosheng123", "shaosheng123"})
@@ -371,12 +445,15 @@ func main() {
 	//}
 	//fmt.Println("Login", code)
 
-	parseArg()
 	devCount := oneEnvParam.ResourceCount
 	stat.GetLocalStatistInst().Init("cu_llog", "logic.dat", int32(devCount))
 	mylog.GetErrorLogger().Init("cu_elog", "error.log")
 	go stat.GetLocalStatistInst().Start()
 	go stat.StartMonitorTask("cu_mlog", "monitor.dat")
+	for {
+		time.Sleep(10 * time.Second)
+	}
+
 	for i := oneEnvParam.BeginID; i <= oneEnvParam.BeginID+devCount-1; i++ {
 
 		sn := new(bytes.Buffer)

@@ -1,0 +1,17 @@
+
+2015/02/28 17:02:50 [Remote Connect Addr :  192.168.20.191:58775]
+
+2015/02/28 17:02:50 [ Begin Chn Heart Task]
+
+2015/02/28 17:02:55 [token  {
+	"ns":	"huamai.default",
+	"method":	"register",
+	"token":	"",
+	"params":	{
+		"resourceid":	"1",
+		"restype":	1,
+		"repos":	false
+	}
+}]
+
+2015/02/28 17:02:55 [Register Source]

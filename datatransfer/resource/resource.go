@@ -314,7 +314,11 @@ func (r *Resourcer) Close(chn *ResourceClient, ns string, all bool) (string, str
 }
 
 func (r *Resourcer) Parse(proto *base.Proto) error {
+	defer func() {
+		if r := recover(); r != nil {
 
+		}
+	}()
 	cmdID := proto.RD.BaseHD.CommandId & 0x7f
 
 	if cmdID == base.OPEN_RESOURCE_CMD || cmdID == base.CLOSE_RESOURCE_CMD {

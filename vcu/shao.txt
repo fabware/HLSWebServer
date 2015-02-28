@@ -1,0 +1,60 @@
+AUTO 	: false
+res begin   : 1
+res count	: 1
+-------------------------------------------------------
+F:\golang\job\src\vcu\cu_llog
+F:\golang\job\src\vcu\cu_elog
+F:\golang\job\src\vcu\cu_mlog
+Recv Connect 127.0.0.1:9999
+192.168.20.191:9101
+Client Console GUI Task Running!
+
+			h : Print Help Info
+			o : Open  Resource
+			c : Close Resource
+			
+Please Your Select : 
+******GCTime:(33:2),GCNum:5, GCPause:0,GCPT:0******
+15:33:14 On:1,Total:1,TotalLeave:0,Open:0,RecvBand:0.00mps,SendBand:0.00mps,Delay:NaNms
+
+Your Select Is:  111
+Please Input Your Resource 
+Open Source :  1
+Please Your Select : 
+Open Response : {"ns":"ns","method":"open","result":"","error":"ok"}
+******GCTime:(33:24),GCNum:14, GCPause:0,GCPT:0.001******
+15:33:26 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.07mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(33:36),GCNum:27, GCPause:0,GCPT:0.0050003******
+15:33:38 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.15mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(33:48),GCNum:39, GCPause:0,GCPT:0.0070004******
+15:33:50 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.16mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(34:0),GCNum:50, GCPause:0,GCPT:0.0090005******
+15:34:02 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.16mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(34:12),GCNum:62, GCPause:0,GCPT:0.015000900000000001******
+15:34:14 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.08mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(34:24),GCNum:74, GCPause:1.0001ms,GCPT:0.018001100000000003******
+15:34:26 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.12mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(34:36),GCNum:84, GCPause:0,GCPT:0.0230015******
+15:34:38 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.05mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(34:48),GCNum:95, GCPause:0,GCPT:0.0260015******
+15:34:50 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.09mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(35:0),GCNum:106, GCPause:0,GCPT:0.029001700000000002******
+15:35:02 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.09mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(35:12),GCNum:118, GCPause:0,GCPT:0.038002400000000006******
+15:35:14 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.14mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(35:24),GCNum:129, GCPause:0,GCPT:0.042002700000000004******
+15:35:26 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.07mps,SendBand:0.00mps,Delay:NaNms
+
+******GCTime:(35:36),GCNum:139, GCPause:0,GCPT:0.044002700000000006******
+15:35:38 On:1,Total:1,TotalLeave:0,Open:1,RecvBand:1.08mps,SendBand:0.00mps,Delay:NaNms
+

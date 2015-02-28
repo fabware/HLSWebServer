@@ -1,0 +1,59 @@
+Recv Connect 127.0.0.1:10000
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal 0xc0000005 code=0x1 addr=0x0 pc=0x403693]
+
+goroutine 9 [running]:
+main.(*CUClient).run(0x201986c0)
+	F:/golang/job/src/vcu/vcu.go:319 +0x373
+created by main.runTcp
+	F:/golang/job/src/vcu/vcu.go:384 +0x427
+
+goroutine 1 [sleep]:
+main.main()
+	F:/golang/job/src/vcu/vcu.go:405 +0x4c
+
+goroutine 17 [syscall, locked to thread]:
+runtime.goexit()
+	c:/go/src/runtime/asm_386.s:2287 +0x1
+
+goroutine 6 [IO wait]:
+net.(*pollDesc).Wait(0x201cc0d0, 0x72, 0x0, 0x0)
+	c:/go/src/net/fd_poll_runtime.go:84 +0x42
+net.(*ioSrv).ExecIO(0x201b23a0, 0x201cc038, 0x6a9ef8, 0x8, 0x201b23b8, 0x201cc460, 0x0, 0x0)
+	c:/go/src/net/fd_windows.go:188 +0x265
+net.(*netFD).acceptOne(0x201cc000, 0x201cc1c0, 0x2, 0x2, 0x201cc038, 0x410f58, 0x0, 0x0)
+	c:/go/src/net/fd_windows.go:558 +0x3ee
+net.(*netFD).accept(0x201cc000, 0x0, 0x0, 0x0)
+	c:/go/src/net/fd_windows.go:585 +0x119
+net.(*TCPListener).AcceptTCP(0x201b23b0, 0x816540, 0x0, 0x0)
+	c:/go/src/net/tcpsock_posix.go:234 +0x48
+net/http.tcpKeepAliveListener.Accept(0x201b23b0, 0x0, 0x0, 0x0, 0x0)
+	c:/go/src/net/http/server.go:1976 +0x48
+net/http.(*Server).Serve(0x20196580, 0x2f32e8, 0x201b23b0, 0x0, 0x0)
+	c:/go/src/net/http/server.go:1728 +0x7b
+net/http.(*Server).ListenAndServe(0x20196580, 0x0, 0x0)
+	c:/go/src/net/http/server.go:1718 +0x101
+net/http.ListenAndServe(0x6c27d8, 0xe, 0x0, 0x0, 0x0, 0x0)
+	c:/go/src/net/http/server.go:1808 +0x9e
+main.func·002()
+	F:/golang/job/src/vcu/vcu.go:393 +0x3e
+created by main.main
+	F:/golang/job/src/vcu/vcu.go:394 +0x28
+
+goroutine 7 [IO wait]:
+net.(*pollDesc).Wait(0x201cc610, 0x72, 0x0, 0x0)
+	c:/go/src/net/fd_poll_runtime.go:84 +0x42
+net.(*ioSrv).ExecIO(0x201b23a0, 0x201cc578, 0x6a9ef8, 0x8, 0x201b23f0, 0x201cc8c0, 0x0, 0x0)
+	c:/go/src/net/fd_windows.go:188 +0x265
+net.(*netFD).acceptOne(0x201cc540, 0x201cc7e0, 0x2, 0x2, 0x201cc578, 0x201be630, 0x0, 0x0)
+	c:/go/src/net/fd_windows.go:558 +0x3ee
+net.(*netFD).accept(0x201cc540, 0x0, 0x0, 0x0)
+	c:/go/src/net/fd_windows.go:585 +0x119
+net.(*TCPListener).AcceptTCP(0x201b23c8, 0x201aff48, 0x0, 0x0)
+	c:/go/src/net/tcpsock_posix.go:234 +0x48
+net.(*TCPListener).Accept(0x201b23c8, 0x0, 0x0, 0x0, 0x0)
+	c:/go/src/net/tcpsock_posix.go:244 +0x48
+main.runTcp(0x0, 0x0)
+	F:/golang/job/src/vcu/vcu.go:376 +0x19c
+created by main.main
+	F:/golang/job/src/vcu/vcu.go:395 +0x36

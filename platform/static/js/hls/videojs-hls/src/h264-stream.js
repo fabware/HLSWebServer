@@ -404,7 +404,7 @@
                 data[offset + 2] === 0 &&
                 data[offset + 3] === 1) {
               if (offset > start) {
-				  videojs.log("offset "+offset+"start "+start)
+				 // videojs.log("offset "+offset+"start "+start)
                 h264Frame.writeBytes(data, start, offset - start);
               }
               state = 3;
@@ -470,7 +470,7 @@
         // We know there will not be an overlapping start code, so we can skip
         // that test
         state = 2;
-		videojs.log("Data Len "+length);
+		
         return this.writeBytes(data, offset, length);
       } // switch
     };

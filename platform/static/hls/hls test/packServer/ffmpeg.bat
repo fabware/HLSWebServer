@@ -1,0 +1,1 @@
+ffmpeg.exe -f h264 -vcodec h264 -i tcp://localhost:9999  -bsf:v h264_mp4toannexb  -f segment -segment_list ../../playlist.m3u8 -segment_time 5 ../../ss%%01d.ts

@@ -1,0 +1,100 @@
+
+2015/02/28 18:19:17 [Remote Connect Addr :  192.168.20.191:61395]
+
+2015/02/28 18:19:17 [ Begin Chn Heart Task]
+
+2015/02/28 18:19:22 [token  {
+	"ns":	"huamai.default",
+	"method":	"register",
+	"token":	"",
+	"params":	{
+		"resourceid":	"1",
+		"restype":	1,
+		"repos":	false
+	}
+}]
+
+2015/02/28 18:19:22 [Register Source]
+
+2015/02/28 18:19:30 [Remote Connect Addr :  192.168.20.191:61414]
+
+2015/02/28 18:19:30 [ Begin Chn Heart Task]
+
+2015/02/28 18:19:32 [token  {"token":"","ns":"ns","method":"open","params":{"resourceid":"1","timeout":10}}]
+
+2015/02/28 18:19:32 [Chn Open Resource ID  1]
+
+2015/02/28 18:19:32 [1  attent Resource Len  1]
+
+2015/02/28 18:21:04 [311 WSARecv tcp 192.168.20.191:9101: An existing connection was forcibly closed by the remote host.]
+
+2015/02/28 18:21:04 [handleError handleReadSocketTask]
+
+2015/02/28 18:21:04 [Unregister Close]
+
+2015/02/28 18:21:04 [Leave notify]
+
+2015/02/28 18:21:04 [handleError handleReadChnTask Panic]
+
+2015/02/28 18:21:04 [handleError Notify Chn Close]
+
+2015/02/28 18:21:04 [token  {"token":"","ns":"ns","method":"open","params":{"resourceid":"1","timeout":10}}]
+
+2015/02/28 18:21:04 [Chn Open Resource ID  1]
+
+2015/02/28 18:21:07 [ End Chn Heart Task]
+
+2015/02/28 18:21:14 [No Found Source  1]
+
+2015/02/28 18:21:14 [311 EOF]
+
+2015/02/28 18:21:14 [handleError handleReadSocketTask]
+
+2015/02/28 18:21:14 [handleError handleReadChnTask Panic]
+
+2015/02/28 18:21:14 [handleError Notify Chn Close]
+
+2015/02/28 18:21:20 [ End Chn Heart Task]
+
+2015/02/28 18:21:24 [Remote Connect Addr :  192.168.20.191:61451]
+
+2015/02/28 18:21:24 [ Begin Chn Heart Task]
+
+2015/02/28 18:22:43 [Remote Connect Addr :  192.168.20.191:61478]
+
+2015/02/28 18:22:43 [ Begin Chn Heart Task]
+
+2015/02/28 18:22:47 [311 WSARecv tcp 192.168.20.191:9101: An existing connection was forcibly closed by the remote host.]
+
+2015/02/28 18:22:47 [handleError handleReadSocketTask]
+
+2015/02/28 18:22:47 [handleError handleReadChnTask Panic]
+
+2015/02/28 18:22:47 [handleError Notify Chn Close]
+
+2015/02/28 18:22:48 [token  {
+	"ns":	"huamai.default",
+	"method":	"register",
+	"token":	"",
+	"params":	{
+		"resourceid":	"1",
+		"restype":	1,
+		"repos":	false
+	}
+}]
+
+2015/02/28 18:22:48 [Register Source]
+
+2015/02/28 18:22:52 [311 WSARecv tcp 192.168.20.191:9101: An existing connection was forcibly closed by the remote host.]
+
+2015/02/28 18:22:52 [handleError handleReadSocketTask]
+
+2015/02/28 18:22:52 [Unregister Close]
+
+2015/02/28 18:22:52 [handleError handleReadChnTask Panic]
+
+2015/02/28 18:22:52 [handleError Notify Chn Close]
+
+2015/02/28 18:22:53 [ End Chn Heart Task]
+
+2015/02/28 18:22:54 [ End Chn Heart Task]
