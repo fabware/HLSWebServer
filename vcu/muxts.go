@@ -18,6 +18,4 @@ func goDataTsCallBack(userData unsafe.Pointer,
 		offset++
 	}
 	(*RawData2Hls)(userData).fileHandler.write(dst)
-	//TsFileHandler.Write(dst)
-
 }

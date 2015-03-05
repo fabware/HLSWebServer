@@ -1,3 +1,8 @@
 *.exe
 *.dat
 *.ts
+*.log
+*.h264
+*.264
+*.dat
+*.csv

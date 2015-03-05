@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
+	"net/http"
 )
 
 type MainController struct {
@@ -19,7 +21,28 @@ type HlsController struct {
 }
 
 func (c *HlsController) Get() {
-	c.TplNames = "example.html"
+
+	// 通过ffmpeg作为切片脚本
+	// /hls/real?method=ffm&resourceid=1
+
+	//通过dll切片
+	// /hls/real?method=dll&resourceid=1
+
+	// 不切片 生成文件
+	// /hls/real?method=debug&resourceid=1
+
+	method := c.GetString("method")
+	resourceid := c.GetString("resourceid")
+	fmt.Println("Begin Request Open video", method, " ", resourceid)
+
+	hlsRquest := &http.Client{}
+
+	res, err := hlsRquest.Get("http://localhost:9998/open/real?method=" +
+		method +
+		"&resourceid=" + resourceid)
+	fmt.Println("Request Open Video", res, err)
+	c.Data["ID"] = resourceid
+	c.TplNames = "hls.tpl"
 }
 
 type CrossDomainController struct {
@@ -41,4 +64,12 @@ type ShaoHlsController struct {
 
 func (c *ShaoHlsController) Get() {
 	c.TplNames = "shao.html"
+}
+
+type ExampleHlsController struct {
+	beego.Controller
+}
+
+func (c *ExampleHlsController) Get() {
+	c.TplNames = "example.html"
 }

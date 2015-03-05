@@ -88,6 +88,8 @@ func (this *m3u8SliceFile) Update(tag m3u8Tag) {
 	buf := new(bytes.Buffer)
 
 	fmt.Fprintf(buf, "#EXTM3U\n"+
+		"#EXT-X-VERSION:3\n"+
+		"#EXT-X-ALLOW-CACHE:YES\n"+
 		"#EXT-X-MEDIA-SEQUENCE:%d\n"+
 		"#EXTINF:%d\n"+
 		"%s\n"+
@@ -149,7 +151,10 @@ func (this *hlsFile) write(data []byte) {
 	if this.fileHandler == nil {
 		this.fileName = this.generateFileName()
 		var err error
+		wd, _ := os.Getwd()
+		os.Chdir("../../")
 		this.fileHandler, err = os.OpenFile(this.fileName, os.O_CREATE|os.O_RDWR, 0777)
+		os.Chdir(wd)
 		if err != nil {
 			fmt.Println("write", err)
 			return
@@ -180,28 +185,22 @@ func (this *hlsFile) write(data []byte) {
 	 mongdb，Riak
 */
 type RawData2Hls struct {
-	fileHandler     hlsFile
-	muxTsHandle     unsafe.Pointer
-	cache           *bytes.Buffer
-	frameCount      uint32
-	h264FileHandler *os.File
+	fileHandler hlsFile
+	muxTsHandle unsafe.Pointer
 }
 
-func (this *RawData2Hls) Init() {
+func (this *RawData2Hls) Init(id string) {
 	this.muxTsHandle = C.createH264MuxTs()
 	C.setCB(this.muxTsHandle, unsafe.Pointer(this))
-	this.frameCount = 0
-	this.fileHandler.Init("shao")
-	this.cache = nil
-	this.h264FileHandler, _ = os.OpenFile("my.h264", os.O_CREATE|os.O_RDWR, 0777)
+	this.fileHandler.Init("../../" + id)
 }
 
 func (this *RawData2Hls) Uninit() {
 	C.releaseH264MuxTs(this.muxTsHandle)
 }
 
-func (this *RawData2Hls) goRawH264Data2Ts(frameType uint16, data []byte) {
+func (this *RawData2Hls) Write(data []byte) (n int, err error) {
 
-	//C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
-	this.h264FileHandler.Write(data)
+	C.rawH264Data2Ts(this.muxTsHandle, unsafe.Pointer(&data[0]), C.uint(len(data)))
+	return 0, nil
 }

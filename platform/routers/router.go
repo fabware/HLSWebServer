@@ -8,10 +8,9 @@ import (
 func init() {
 
 	beego.Router("/", &controllers.MainController{})
-
-	beego.Router("/example", &controllers.HlsController{})
+	beego.Router("/example", &controllers.ExampleHlsController{})
 	beego.Router("/crossdomain.xml", &controllers.CrossDomainController{})
-	beego.SetStaticPath("/hls/", "/static/hls")
-	beego.SetStaticPath("/apple/*.m3u8", "/static/hls")
 	beego.Router("/shao", &controllers.ShaoHlsController{})
+
+	beego.Router("/hls/*", &controllers.HlsController{})
 }
