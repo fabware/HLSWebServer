@@ -4,16 +4,7 @@ res count	: 1
 -------------------------------------------------------
 Recv Connect 127.0.0.1:9999
 192.168.20.191:9101
-Remove File  ../../1_0.ts   remove ../../1_0.ts: The system cannot find the file specified.
-Remove File  ../../1_1.ts   remove ../../1_1.ts: The system cannot find the file specified.
-Remove File  ../../1_2.ts   remove ../../1_2.ts: The system cannot find the file specified.
-Remove File  ../../1_3.ts   remove ../../1_3.ts: The system cannot find the file specified.
-Remove File  ../../1_4.ts   remove ../../1_4.ts: The system cannot find the file specified.
-Remove File  ../../1_5.ts   remove ../../1_5.ts: The system cannot find the file specified.
-Remove File  ../../1_6.ts   remove ../../1_6.ts: The system cannot find the file specified.
-Remove File  ../../1_7.ts   remove ../../1_7.ts: The system cannot find the file specified.
-Remove File  ../../1_8.ts   remove ../../1_8.ts: The system cannot find the file specified.
-Remove File  ../../1_9.ts   remove ../../1_9.ts: The system cannot find the file specified.
+Open Fail
 Open Response : {"ns":"ns","method":"open","result":"","error":"ok"}
 num_units_in_tick  450000
 Change Buffer  [72 0 109 221 0]
@@ -27,3 +18,4 @@ Change Buffer  [72 0 109 221 0]
 num_units_in_tick  450000
 Change Buffer  [72 0 109 221 0]
 [0 13 187 160]
+Remove File  ../../1_0.ts   <nil>

@@ -161,7 +161,7 @@ func handleHttpPost(rw http.ResponseWriter, rq *http.Request) {
 
 	proxy := CreateProxy(id)
 	if method == "ffm" {
-		os.Remove(id + ".m3u8")
+		os.Remove("../../" + id + ".m3u8")
 		go ffmpegCmmand(id)
 	} else if method == "dll" {
 		proxy.hlsHandler = new(RawData2Hls)

@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Pragma" content="no-cache">
+  
   <title>设备{{.ID}}实时视频</title>
 
   <link href="/static/js/hls/videojs-hls/video.js/dist/video-js/video-js.css" rel="stylesheet">
