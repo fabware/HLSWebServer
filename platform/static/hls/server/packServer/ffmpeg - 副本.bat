@@ -1,0 +1,1 @@
+ffmpeg.exe  -re -i tcp://localhost:9999 -f h264    -f segment -segment_list_size 5 -segment_list ../../playlist.m3u8 -segment_list_flags cache  -segment_time 1 ../../ss%%01d.ts

@@ -1,0 +1,12 @@
+1. 通过ffmpeg作为切片脚本
+/hls/real?method=ffm&resourceid=1
+
+2.通过dll切片
+/hls/real?method=dll&resourceid=1
+
+3. 不切片 生成文件
+/hls/real?method=debug&resourceid=1
+
+
+mthod表示切片类型，ffm表示使用ffmpeg脚本切片，dll表示使用dll切片，debug表示调试模式，不切片，产生裸数据文件
+resourceid 表示所请求的资源ID

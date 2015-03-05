@@ -1,0 +1,9 @@
+1. beego http://www.unionspower.com/
+
+2. http://www.open-open.com/lib/view/open1346511794881.html
+
+3. http://www.tuicool.com/articles/RF7neqr  ffmpeg的流文件切片功能
+
+4. http://www.cnblogs.com/haibindev/archive/2013/01/30/2880764.html HTTP Live Streaming直播(iOS直播)技术分析与实现
+
+5. http://blog.csdn.net/wutong_login/article/details/9673255 HLS协议实现
