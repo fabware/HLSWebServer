@@ -63,7 +63,7 @@
          height="300"
          width="600"
 		 loop="loop"
-		 controls preload="/static/views/video.jpg"
+		 controls autoplay="autoplay"
 		 >
     <source
        src="/static/hls/{{.ID}}.m3u8"
@@ -71,37 +71,17 @@
   </video>
   <script>
   
-  
-window.onbeforeunload=function (){
-alert("===onbeforeunload===");
-if(event.clientX>document.body.clientWidth && event.clientY < 0 || event.altKey){
-     alert("你关闭了浏览器");
-	 window.location.href="http://localhost:9100/sssss"
-}else{
-     alert("你正在刷新页面");
-}
-}
     
     // initialize the player
     var player = videojs('video');
-	player.addTextTrack("Captions","Hello World");
+
 	// 错误事件处理逻辑
 	player.one("error",function(){
 				console.log("Hello World,error");
-				player.error("数据正在准备中,请稍后刷新!");}
-			);
+				player.error("数据正在准备中,正在刷新!");
+				setTimeout("self.location.reload();",3000);}
+	);
 		
-	player.one("play",function(){
-	console.log("hello World, play");
-	});
-	
-	player.one("ended",function(){
-	console.log("hello World,end");
-	});
-player.one("waiting",function(){
-	console.log("Hello World,waiting");
-	return "waiting";
-	});
 
 
   </script>

@@ -309,12 +309,6 @@ func (p *Proto) EncodeBody(buf []byte) {
 
 func (p *Proto) ReadBinaryProto(connSocket net.Conn) error {
 
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("ReadBinaryProto panic", r)
-		}
-	}()
-
 	tmpBaseHdSlice := make([]byte, BaseHeaderLenC)
 	{
 		n, e := io.ReadFull(connSocket, tmpBaseHdSlice)

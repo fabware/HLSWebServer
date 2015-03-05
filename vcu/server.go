@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"strconv"
 	"sync"
+
 	"utility/mylog"
 )
 
@@ -75,11 +76,19 @@ func CheckResourceIsExist(id string) bool {
 
 }
 
-func ReleaseProxy(proxy *CUClient) error {
+func GetProxy(id string) *CUClient {
+	proxy, ok := proxyPoolInst().hlsProxy[id]
+	if ok {
+		return proxy
+	}
+	return nil
+}
+func ReleaseProxy(id string) error {
 
 	proxyPoolInst().mutex.Lock()
 	defer proxyPoolInst().mutex.Unlock()
-	delete(proxyPoolInst().hlsProxy, proxy.sn)
+
+	delete(proxyPoolInst().hlsProxy, id)
 
 	return nil
 }
@@ -147,13 +156,11 @@ func ffmpegCmmand(id string) {
 
 }
 
-func handleHttpPost(rw http.ResponseWriter, rq *http.Request) {
+func handleHttpOpen(rw http.ResponseWriter, rq *http.Request) {
 
 	method := rq.FormValue("method")
 	id := rq.FormValue("resourceid")
-	if CheckResourceIsExist(id) {
-		return
-	}
+
 	if CheckResourceIsExist(id) {
 		rw.Write([]byte("No,Sorry, Video Has Open"))
 		return
@@ -175,13 +182,31 @@ func handleHttpPost(rw http.ResponseWriter, rq *http.Request) {
 	rw.Write([]byte("No,Sorry, Method Not Exist"))
 }
 
+func handleHttpClose(rw http.ResponseWriter, rq *http.Request) {
+
+	id := rq.FormValue("resourceid")
+	if !CheckResourceIsExist(id) {
+		rw.Write([]byte("No,Sorry, Video Not Open"))
+		return
+	}
+	err := os.Remove("../../" + id + ".m3u8")
+	if err != nil {
+		fmt.Println(err)
+	}
+	rw.Write([]byte("Video Has Close"))
+	proxy := GetProxy(id)
+	proxy.Stop()
+	ReleaseProxy(id)
+}
+
 func runHttp(port int) error {
 
 	portStr := new(bytes.Buffer)
 	portStr.WriteByte(':')
 	portStr.WriteString(strconv.Itoa(int(port)))
 
-	http.HandleFunc("/open/", handleHttpPost)
+	http.HandleFunc("/open/", handleHttpOpen)
+	http.HandleFunc("/close/", handleHttpClose)
 	e := http.ListenAndServe(portStr.String(), nil)
 	if e != nil {
 		return e

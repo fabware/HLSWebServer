@@ -49,20 +49,22 @@ type EnvParam struct {
 var oneEnvParam *EnvParam = nil
 
 func (cu *CUClient) handleError(err error) {
-	fmt.Println(err)
 
 	if atomic.CompareAndSwapUint32(&cu.Valid, 0, 0) {
 		return
 	}
+	fmt.Println(err)
 	//stat.GetLocalStatistInst().Off()
 	atomic.CompareAndSwapUint32(&cu.Valid, 1, 0)
 	cu.connSocket.Close()
 	close(cu.heartChn)
-	ReleaseProxy(cu)
+
 	if cu.ffmpegChn != nil {
+		fmt.Println("Close ffmpegchn")
 		cu.ffmpegChn.Close()
 		cu.ffmpegChn = nil
 	}
+	ReleaseProxy(cu.sn)
 }
 
 func frameRateChange(data []byte) []byte {
@@ -169,6 +171,11 @@ func (cu *CUClient) timerClear() {
 }
 
 func (cu *CUClient) readTask() {
+	defer func() {
+		if r := recover(); r != nil {
+			cu.handleError(base.DTerror{})
+		}
+	}()
 
 	for {
 		proto := new(base.Proto)
@@ -176,7 +183,7 @@ func (cu *CUClient) readTask() {
 		err := proto.ReadBinaryProto(cu.connSocket)
 		if err != nil {
 			cu.handleError(err)
-			break
+			return
 		}
 
 		cmdID := proto.RD.BaseHD.CommandId & 0x7f
@@ -277,15 +284,6 @@ func (cu *CUClient) readTask() {
 	}
 }
 
-func help() {
-	str := `
-			h : Print Help Info
-			o : Open  Resource
-			c : Close Resource
-			`
-	fmt.Println(str)
-}
-
 func (cu *CUClient) openSource(clientID uint32, id string) error {
 
 	proto := new(base.Proto)
@@ -355,52 +353,13 @@ func (cu *CUClient) closeSource(clientID uint32, id string) {
 	return
 }
 
-func (cu *CUClient) consoleTask() {
-	fmt.Println("Client Console GUI Task Running!")
-	help()
-
-	for {
-		var cmd byte
-		fmt.Println("Please Your Select : ")
-		fmt.Scanf("%c\n", &cmd)
-		fmt.Println("Your Select Is: ", cmd)
-		switch cmd {
-		case 'o':
-
-			var sourceID uint32 = 0
-			fmt.Println("Please Input Your Resource ")
-			fmt.Scanf("%d\n", &sourceID)
-			sourceSN := new(bytes.Buffer)
-			fmt.Fprintf(sourceSN, "%v", sourceID)
-			fmt.Println("Open Source : ", sourceSN)
-			atomic.AddUint32(&cu.clientID, 1)
-			go cu.openSource(cu.clientID, sourceSN.String())
-		case 'c':
-			var sourceID uint32 = 0
-			fmt.Println("Please Input Your Resource ")
-			fmt.Scanf("%d\n", &sourceID)
-			sourceSN := new(bytes.Buffer)
-			fmt.Fprintf(sourceSN, "%v", sourceID)
-			fmt.Println("Open Source : ", sourceSN)
-			go cu.closeSource(cu.clientID, sourceSN.String())
-		case 'h':
-			help()
-		default:
-			fmt.Println("Not Support Cmd")
-			help()
-		}
-
-	}
-}
-
 func (cu *CUClient) run() {
 
 	fmt.Println(oneEnvParam.url)
 	connSocket, err := net.DialTimeout("tcp", oneEnvParam.url, 2*time.Second)
 
 	if err != nil {
-		fmt.Println(err)
-		go cu.run()
+		cu.handleError(err)
 		return
 	}
 
@@ -411,11 +370,11 @@ func (cu *CUClient) run() {
 
 	cu.heartChn = make(chan bool, 1)
 
-	go cu.readTask()
 	atomic.AddUint32(&cu.clientID, 1)
-	if oneEnvParam.auto {
-		go cu.openSource(cu.clientID, cu.sn)
-	} else {
-		go cu.consoleTask()
-	}
+	go cu.readTask()
+	go cu.openSource(cu.clientID, cu.sn)
+}
+
+func (cu *CUClient) Stop() {
+	cu.handleError(base.DTerror{"Close Video"})
 }
