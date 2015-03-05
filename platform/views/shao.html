@@ -3,12 +3,18 @@
 <head>
 <title>the5fire m3u8 test</title>
 </head>
-<body>
+<body onerror="alert('Hello')">
 <div class="player">
 
-  <video width="320" height="240" controls="controls" autoplay="autoplay" loop="loop">
+  <video id ="video1"width="320" height="240" controls="controls" autoplay="autoplay" loop="loop">
     <source type="video/mp4" src="static/hls/playlist.m3u8" width="320" height="240" /> 
   </video>
 </div>
+<script>
+	video=document.getElementById("video1");
+    video.addEventListener("playing", function () {
+            console.log("Playing....");
+          }, false);
+</script>
 </body>
 </html>

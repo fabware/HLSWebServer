@@ -7,3 +7,7 @@
 4. http://www.cnblogs.com/haibindev/archive/2013/01/30/2880764.html HTTP Live Streaming直播(iOS直播)技术分析与实现
 
 5. http://blog.csdn.net/wutong_login/article/details/9673255 HLS协议实现
+
+6. https://github.com/videojs/video.js  		video.js
+
+7. https://github.com/videojs/videojs-contrib-hls	hls插件

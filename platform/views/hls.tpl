@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
+  <meta charset="GB2312">
   <meta http-equiv="Pragma" content="no-cache">
   
   <title>设备{{.ID}}实时视频</title>
@@ -56,22 +56,54 @@
   </style>
 
 </head>
-<body>
+<body onunload="location.href='www.baidu.com'">
  
   <video id="video"
          class="video-js vjs-default-skin"
          height="300"
          width="600"
 		 loop="loop"
-		 controls preload="none">
+		 controls preload="/static/views/video.jpg"
+		 >
     <source
        src="/static/hls/{{.ID}}.m3u8"
        type="application/x-mpegURL">
   </video>
   <script>
-    videojs.options.flash.swf = '/static/js/hls/videojs-hls/video.js/dist/video-js/video-js.swf';
+  
+  
+window.onbeforeunload=function (){
+alert("===onbeforeunload===");
+if(event.clientX>document.body.clientWidth && event.clientY < 0 || event.altKey){
+     alert("你关闭了浏览器");
+	 window.location.href="http://localhost:9100/sssss"
+}else{
+     alert("你正在刷新页面");
+}
+}
+    
     // initialize the player
     var player = videojs('video');
+	player.addTextTrack("Captions","Hello World");
+	// 错误事件处理逻辑
+	player.one("error",function(){
+				console.log("Hello World,error");
+				player.error("数据正在准备中,请稍后刷新!");}
+			);
+		
+	player.one("play",function(){
+	console.log("hello World, play");
+	});
+	
+	player.one("ended",function(){
+	console.log("hello World,end");
+	});
+player.one("waiting",function(){
+	console.log("Hello World,waiting");
+	return "waiting";
+	});
+
+
   </script>
 </body>
 </html>

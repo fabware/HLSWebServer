@@ -11,6 +11,6 @@ func init() {
 	beego.Router("/example", &controllers.ExampleHlsController{})
 	beego.Router("/crossdomain.xml", &controllers.CrossDomainController{})
 	beego.Router("/shao", &controllers.ShaoHlsController{})
-
+	beego
 	beego.Router("/hls/*", &controllers.HlsController{})
 }
